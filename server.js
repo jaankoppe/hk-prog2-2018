@@ -3,8 +3,15 @@ const app = express();
 
 const fs = require("fs");
 
+app.set('view engine', 'ejs');
+
+app.use('/failid', express.static('public'));
+
 app.get('/', (req, res) => {
-    res.send("ok");
+    //res.send("ok");
+    let title = "See pealkiri tuleb serverist";
+    res.locals.title = title;
+    res.render('index');
 });
 
 app.get('/fail', (req, res) => {
