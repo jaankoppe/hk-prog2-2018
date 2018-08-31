@@ -1,0 +1,22 @@
+{
+  "name": "hk-prog2-2018",
+  "version": "1.0.0",
+  "description": "* 31.08.2018 - [Sissejuhatus](#Sissejuhatus) | Node.js; NPM\r * 13.09.2018 - Veebiserveri loomine, kasutades Express.js moodulit\r * 26.10.2018 - MongoDB andmebaasi tutvustus ning lisamine Node.js projektis\r * 08.11.2018 - WebSocketi protokolli kasutamine kasutades Socket.io moodulit \r * 06.12.2018 - Töölaua rakenduse loomine kasutades Electron-i. \r * 11.01.2019 - Kordamine või eksami esitamise tähtaeg",
+  "main": "algus.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jaankoppe/hk-prog2-2018.git"
+  },
+  "author": "Jaan Koppe",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jaankoppe/hk-prog2-2018/issues"
+  },
+  "homepage": "https://github.com/jaankoppe/hk-prog2-2018#readme",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
+}
