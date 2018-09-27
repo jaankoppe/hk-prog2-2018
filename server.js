@@ -14,6 +14,34 @@ app.get('/', (req, res) => {
     res.render('index');
 });
 
+app.get('/inspect', (req, res) => {
+
+    console.log(res);
+    res.removeHeader('X-Powered-By');
+    res.send('');
+});
+
+app.get('/fail/:nr', (req, res) => {
+    // :nr = req.params.nr
+    let style = req.query.style;
+    let title = req.query.title;
+    fs.readFile("fail" + req.params.nr + ".txt", (err, data) => {
+        if(data) {
+            let fail = data.toString();
+
+            if(style == "uppercase") {
+                fail = fail.toUpperCase();
+            }
+            if(title == 1) {
+                fail = "<h1>" + fail + "</h1>";
+            }
+            return res.send(fail); 
+        }
+        return res.send("Ei leitud sellist faili");
+        
+    });
+});
+
 app.get('/fail', (req, res) => {
     // kuvame fail.txt sisu veebilehel
     // 1. lisada fs moodul
