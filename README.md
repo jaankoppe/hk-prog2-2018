@@ -4,7 +4,7 @@
 
 * 31.08.2018 - [Sissejuhatus](#Sissejuhatus) | Node.js; NPM; Veebiserveri loomine, kasutades Express.js moodulit
 * 28.09.2018 - [MongoDB andmebaasi tutvustus ning lisamine Node.js projektis](#MongoDB)
-* 26.10.2018 - WebSocketi protokolli kasutamine kasutades Socket.io moodulit 
+* 26.10.2018 - [WebSocketi protokolli kasutamine kasutades Socket.io moodulit](#Socket.io) 
 * 06.12.2018 - Töölaua rakenduse loomine kasutades [Electron](https://electronjs.org/)-i. 
 * 21.12.2018 - Kordamine või eksami esitamise tähtaeg
 
@@ -100,3 +100,126 @@ Viimasena on vaja teha iga GET päringu jaoks EJS fail, mis kuvab vastavat sisu.
 _Nende videote ja erinevate tehnoloogiate dokumentatsioonide põhjal peab iga teise kursuse rakendusinformaatika tudeng suutma selle ülesande ära lahendada. Küsimuste korral aitab Google või materjali uuesti läbi vaatamine - uskuge, kui videot teist korda uuesti vaatate, leiate kindlasti midagi uut juurde, mis esimesel korral märkamata jäi :)_
 _Kellel ikkagi küsimused õhku jäävad, siis saab küsida järgmise loengu ajal, vaatame üle_
 
+## **Socket.io**
+
+Websocketi protokolli kasutamine võimaldab serveri ja kliendi vahel nö kahtepidi suhtlust. Kui HTTP puhul peab kliendi poolt tulema päring serverile ning siis server annab vastuse, siis webscoketi puhul luuakse nö. lahtine ühendus, mille abil saab server otsse kliendile teateid saata. See võimaldab arendada reaalaja rakendusi. Node.js platvormil teeb websocketi protokollil põhinevate rakenduste arendamise mugavamaks selline moodul nagu Socket.io.
+
+Esimene asi kui me tahame lisada socket.io -d oma rakendusele, mis praegu oleme teinud, peame muutma natuke algset ülesehitust.
+
+[Ametlikus juhendis](https://socket.io/get-started/chat/) peame panema rakenduse käima ja porti kuulama kasutades Node.js sisseehitatud http moodulit, kuid meie teeme seda otse express rakenduse kaudu (app.listen vs http.listen).
+
+Esimese asjana installeerime mooduli:
+
+```
+npm install --save socket.io
+```
+
+Meil ei ole hetkel lisatud http moodulit seega lisame selle:
+
+```javascript
+const http = require("http");
+```
+
+Ning listen osa muudame nii:
+
+```javascript
+http.listen(3000, () => {
+    console.log("Server kuulab porti 3000");
+});
+```
+
+Seda on vaja, sest socket.io on nii ülesehitatud, et see teeb ühenduse läbi http mooduli, ning omakorda http moodulisse peab olema seadistatud expressi rakendus:
+
+```javascript
+// see lisada peale express rakenduse (const app) deklareerimist
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+```
+
+Nüüd edasi serveri pool ühenduse loomiseks on vaja lisada nö sündmuse kuulaja (event listener):
+
+```javascript
+    io.on('connection', function(socket){
+        console.log('Ühendus kasutajaga on loodud');
+    });
+```
+
+Et ühendus tekiks on vaja kliendi pool (ehk siis HTML failis) lisada kliendi poolne socket.io script:
+
+```html
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  var socket = io();
+</script>
+```
+
+Loomulikult tuleb teha mingisugune endpoint, mis renderdab html faili, kuhu see kood panna, selle kohta on näide esimeset korrast olemas.
+
+Kui nüüd minna sinna aadressile, kuhu lisasite kliendipoolse koodi, siis peaks serveri logisse ilmuma 'Ühendus kasutajaga on loodud'.
+
+Nüüd edasi on vaja veel ainult selgeks teha, kuidas saab nii serveri kui kliendi poolel teateid saata ning vastu võtta. Et süsteem oleks reaalaja süsteem, (näiteks chat) siis toimib see nii, et kui klient saadab serverile teate (ütleme, et see teade on sõnum avalikku chat-i), siis server saadab selle sama sisu kõikidele klientidele tagasi. Teeme proovi:
+
+```html
+<script src="/socket.io/socket.io.js"></script>
+
+<!-- Vaja on tekstivälja, nuppu ning ühte elementi veel, kuhu sõnumid tekitada -->
+<ul id="messages"></ul>
+<br>
+<input type="text" id="txt">
+<button id="send">Send</button>
+
+<script>
+  var socket = io();
+  
+  // elemendid muutujatesse
+  var chat = document.getElementById("messages");
+  var txt = document.getElementById("txt");
+  var sendBtn = document.getElementById("send");
+
+  // nupu funktsioon
+  sendBtn.addEventListener("click", function(e) {
+      // saadab teate nimega "chat" serverisse, selle peame serveri pool vastu võtma, et kõikidele klientidele edastada
+      socket.emit('chat', txt.value);
+      // tekstivälja sisu tühjaks
+      txt.value = "";
+  });
+
+  // selle funktsiooni abil võtma serveri poolt vastu teateid nimega 'chat'
+  socket.on('chat', function(msg) {
+      // ning lisame saadud teate kõikide teiste teadete hulka
+      chat.innerHTML += '<li>' + msg + '</li>';
+  });
+</script>
+```
+Nüüd on meil veel vaja serveri poole lisada sõnumite vastuvõtmine ning kõikidele klientidele tagasi saatmine
+
+```javascript
+    io.on('connection', function(socket){
+        console.log('Ühendus kasutajaga on loodud');
+        
+        // võtame kliendi poolt vastu teate "chat"
+        socket.on('chat', (msg) => {
+            // saadame kõikidele klientidele tagasi
+            io.emit('chat', msg);
+        });
+    });
+```
+
+Sellega on meil lihtne reaalaja rakendus olemas.
+
+**Harjutus 1**
+
+Täiendage rakendust selliselt, et teksti kuvamisel näitaks ka selle saatja nime. \
+Mis selle jaoks kõige pealt vaja oleks? Kuidagi on vaja selgeks teha selle kasutaja nimi, kes ühenduse tekitas. Kliendi poole peaks tekitama võimaluse nime sisestuseks ning selle saatma serverile. \
+Saatke serveri poolt tekst klientidele tagasi objektina - nimi ja sõnum eraldi. \
+
+Kui server on teada saanud kasutaja nime, siis saata klientidele(kuid mitte sellele kliendile, kes liitus) teade: "{nimi} on liitunud vestlusega", kus {nimi} tähistab liitunud kasutaja nime. See funktsionaalsus on socket.io-l olemas ning kirjas [selles samas juhendis](https://socket.io/get-started/chat/) mis eelnevalt jagasin, proovige üles leida ja lisada.
+
+**Harjutus 2**
+
+Eelmine teema oli MongoDB andmebaasiga seotud - tegite andmemudeli blogi artikli kohta. \
+Siin harjutuses seome kokku meie algelise vestlusrakenduse andmebaasiga, mis salvestaks kõik vestlused.
+
+* Looge andmemudel vestluste kohta - mõelge ise välja, mis väljad peaksid/võiksid mudelis olla.
+* Salvestada kõik vestlused andmebaasi
+* Uue kasutaja ühinemisel näidata viimast 10 -t sõnumit.
