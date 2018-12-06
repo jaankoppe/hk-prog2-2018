@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <body>
+
+        <main>
+            <div class="container">
+                <h1>Posts</h1>
+                <a href="/blog/add" class="btn btn-primary">New Post</a>
+                <% posts.forEach(function(post) { %>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title"><a href="/blog/<%= post.slug %>/<%= post._id %>"><%= post.title %></a></h2>
+                        <div><% if(post.author) { %><%= post.author %><% } %> | <%= post.dateCreated %></div>
+                        <p><%= post.content %></p>
+                    </div>
+                </div>
+                <% }); %>
+            </div>
+        </main>
+    </body>
+</html>

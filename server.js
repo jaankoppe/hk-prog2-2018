@@ -1,11 +1,18 @@
 const express = require("express");
 const app = express();
-
+var http = require('http').Server(app);
+const io = require('socket.io')(http);
 const fs = require("fs");
+const mongoose = require('mongoose');
+
+const socketRoutes = require('./controller/socket');
+
+mongoose.connect('mongodb://localhost/prog2');
 
 app.set('view engine', 'ejs');
-
 app.use('/failid', express.static('public'));
+
+app.use('/blog', require('./controller/blog') );
 
 app.get('/', (req, res) => {
     //res.send("ok");
@@ -53,6 +60,33 @@ app.get('/fail', (req, res) => {
     });
 });
 
-app.listen(3000, () => {
+io.on('connection', (socket) => {
+    let id = socket.id;
+    console.log("user connected", id);
+    // console.log(id);
+
+    // harjutus
+    socket.on('name', (name) => {
+        console.log(name);
+        socket.name = name;
+        socket.broadcast.emit('join', socket.name + " liitus vestlusega");
+    });
+    
+    socket.on('chat', (msg) => {
+        // saadame kõikidele klientidele tagasi
+        io.emit('chat', {name: socket.name, text: msg});
+    });
+    
+    socket.on('disconnect', () => {
+        // console.log(id);
+        console.log("user disconnected", id);
+    });
+});
+
+
+
+app.use('/socket', socketRoutes);
+
+http.listen(3000, () => {
     console.log("Server kuulab porti 3000");
 });
