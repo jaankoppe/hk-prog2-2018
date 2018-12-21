@@ -6,10 +6,30 @@
 * 13.09.2018 - Veebiserveri loomine, kasutades Express.js moodulit
 * 26.10.2018 - MongoDB andmebaasi tutvustus ning lisamine Node.js projektis
 * 08.11.2018 - WebSocketi protokolli kasutamine kasutades Socket.io moodulit 
-* 06.12.2018 - Töölaua rakenduse loomine kasutades Electron-i. 
-* 11.01.2019 - Kordamine või eksami esitamise tähtaeg
+* 21.12.2018 - Töölaua rakenduse loomine kasutades Electron-i. 
+* 15.01.2019 - Kordamine või eksami esitamise tähtaeg
 
 ---
+
+## **Eksami tingimused**
+
+Serveripoolse veebirakenduse või Electroni töölaua rakenduse loomine, mis sisaldab:
+* MongoDB andmebaasi
+* Websocketi ühendust läbi socket.io
+
+Muud nõuded:
+* Andmebaasiga suhtlus peab toimuma läbi Websocketi.
+* Andmebaasiga peab saama kirjeid:
+    * Pärida/vaadata
+    * Lisada
+    * Muuta
+    * Kustutada
+* Kogu kood peab olema versioonihalduses
+* Versioonihalduse README's peab olema juhend kuidas rakendust installeerida ja käivitada.
+
+Lihtsalt kopeeritavaid a'la TODO app'e ei taha näha. Teema osas konsulteerida minuga kui ei ole kindel.
+
+Töö esitamiseks saata mulle veebilink projekti repositooriumist.
 
 ## **Sissejuhatus**
 
