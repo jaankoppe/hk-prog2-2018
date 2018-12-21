@@ -1,6 +1,9 @@
 const express = require("express");
 const app = express();
 
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+
 const fs = require("fs");
 
 app.set('view engine', 'ejs');
@@ -53,6 +56,26 @@ app.get('/fail', (req, res) => {
     });
 });
 
-app.listen(3000, () => {
+app.get('/socket', (req, res) => {
+    res.render('socket');
+})
+
+io.on('connection', function(socket){
+    console.log('Ühendus kasutajaga on loodud');
+
+    socket.on('chat', (msg) => {
+        // saadame kõikidele klientidele tagasi
+        io.emit('chat', msg);
+    });
+
+    socket.on('nimi', (nimi) => {
+        socket.nimi = nimi;
+        console.log(socket.nimi + " on ühendatud");
+        io.emit('nimi', nimi);
+    })
+
+});
+
+http.listen(3000, () => {
     console.log("Server kuulab porti 3000");
 });

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script src="/socket.io/socket.io.js"></script>
+
+<!-- Vaja on tekstivälja, nuppu ning ühte elementi veel, kuhu sõnumid tekitada -->
+<ul id="messages"></ul>
+<br>
+<input type="text" id="txt">
+<button id="send">Send</button>
+
+<script>
+  var nimi = prompt("Nimi: ");
+  var socket = io();
+  
+  socket.emit("nimi", nimi);
+  // elemendid muutujatesse
+  var chat = document.getElementById("messages");
+  var txt = document.getElementById("txt");
+  var sendBtn = document.getElementById("send");
+
+  // nupu funktsioon
+  sendBtn.addEventListener("click", function(e) {
+      // saadab teate nimega "chat" serverisse, selle peame serveri pool vastu võtma, et kõikidele klientidele edastada
+      socket.emit('chat', txt.value);
+      // tekstivälja sisu tühjaks
+      txt.value = "";
+  });
+
+  // selle funktsiooni abil võtma serveri poolt vastu teateid nimega 'chat'
+  socket.on('chat', function(msg) {
+      // ning lisame saadud teate kõikide teiste teadete hulka
+      chat.innerHTML += '<li>' + msg + '</li>';
+  });
+
+  socket.on('nimi', function(nimi) {
+      // ning lisame saadud teate kõikide teiste teadete hulka
+      chat.innerHTML += '<li>Kasutaja ' + nimi + ' on liitunud</li>';
+  });
+</script>
+</body>
+
+</html>
