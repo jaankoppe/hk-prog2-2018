@@ -31,6 +31,8 @@ Lihtsalt kopeeritavaid a'la TODO app'e ei taha näha. Teema osas konsulteerida m
 
 Töö esitamiseks saata mulle veebilink projekti repositooriumist.
 
+**Tähtaeg 15.jaanuar 2019**
+
 ## **Sissejuhatus**
 
 ### **Node.js**
